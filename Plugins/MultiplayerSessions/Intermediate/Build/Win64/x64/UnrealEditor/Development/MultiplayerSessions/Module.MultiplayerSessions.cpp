@@ -2,3 +2,6 @@
 #include "C:/Beast/UnrealProjects/Blaster/Plugins/MultiplayerSessions/Intermediate/Build/Win64/UnrealEditor/Inc/MultiplayerSessions/UHT/Menu.gen.cpp"
 #include "C:/Beast/UnrealProjects/Blaster/Plugins/MultiplayerSessions/Intermediate/Build/Win64/UnrealEditor/Inc/MultiplayerSessions/UHT/MultiplayerSessions.init.gen.cpp"
 #include "C:/Beast/UnrealProjects/Blaster/Plugins/MultiplayerSessions/Intermediate/Build/Win64/UnrealEditor/Inc/MultiplayerSessions/UHT/MultiplayerSessionsSubsystem.gen.cpp"
+#include "C:/Beast/UnrealProjects/Blaster/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Private/Menu.cpp"
+#include "C:/Beast/UnrealProjects/Blaster/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Private/MultiplayerSessions.cpp"
+#include "C:/Beast/UnrealProjects/Blaster/Plugins/MultiplayerSessions/Source/MultiplayerSessions/Private/MultiplayerSessionsSubsystem.cpp"
