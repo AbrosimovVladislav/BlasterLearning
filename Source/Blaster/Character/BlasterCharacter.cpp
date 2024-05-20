@@ -87,7 +87,7 @@ void ABlasterCharacter::CameraSetup()
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetMesh());
-	CameraBoom->TargetArmLength = 900.f;
+	CameraBoom->TargetArmLength = 450.f;
 	CameraBoom->SetRelativeLocation(FVector(0.f, 0.f, 130.f));
 	CameraBoom->SetRelativeRotation(FRotator(-40.f, 0.f, 0.f));
 	CameraBoom->bInheritPitch = false;
