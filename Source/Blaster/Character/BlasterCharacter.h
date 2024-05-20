@@ -19,16 +19,19 @@ protected:
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);
-	void Turn(float Value);
-	void LookUp(float Value);
+	void RotateCharacterToMouseCursor();
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta=(AllowPrivateAccess="true"))
 	class USpringArmComponent* CameraBoom;
 
-	UPROPERTY(VisibleAnywhere, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta=(AllowPrivateAccess="true"))
 	class UCameraComponent* FollowCamera;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	class UWidgetComponent* OverheadWidget;
+
+	void CameraSetup();
+	void TestTextWidgetSetup();
+	
 };
