@@ -14,6 +14,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	//Getters Setters
+	FVector GetForwardVector() const;
+	FVector GetRightVector() const;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -31,7 +35,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	class UWidgetComponent* OverheadWidget;
 
+	FVector ForwardVector;
+	FVector RightVector;
+
 	void CameraSetup();
 	void TestTextWidgetSetup();
-	
 };

@@ -46,7 +46,7 @@ void ABlasterCharacter::MoveForward(float Value)
 {
 	if (Controller != nullptr && Value != 0.f)
 	{
-		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator Rotation = FollowCamera->GetComponentRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
@@ -57,7 +57,7 @@ void ABlasterCharacter::MoveRight(float Value)
 {
 	if (Controller != nullptr && Value != 0.f)
 	{
-		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator Rotation = FollowCamera->GetComponentRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		AddMovementInput(Direction, Value);
@@ -79,6 +79,9 @@ void ABlasterCharacter::RotateCharacterToMouseCursor()
 			FVector TargetLocation = WorldLocation + WorldDirection * 1000;
 			FRotator NewRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
 			SetActorRotation(FRotator(0.0f, NewRotation.Yaw, 0.0f));
+
+			ForwardVector = GetActorForwardVector();
+			RightVector = GetActorRightVector();
 		}
 	}
 }
@@ -87,7 +90,7 @@ void ABlasterCharacter::CameraSetup()
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetMesh());
-	CameraBoom->TargetArmLength = 600.f;
+	CameraBoom->TargetArmLength = 800.f;
 	CameraBoom->SetRelativeLocation(FVector(0.f, 0.f, 130.f));
 	CameraBoom->SetRelativeRotation(FRotator(-40.f, 0.f, 0.f));
 	CameraBoom->bInheritPitch = false;
@@ -104,4 +107,14 @@ void ABlasterCharacter::TestTextWidgetSetup()
 {
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(RootComponent);
+}
+
+FVector ABlasterCharacter::GetForwardVector() const
+{
+	return ForwardVector;
+}
+
+FVector ABlasterCharacter::GetRightVector() const
+{
+	return RightVector;
 }
