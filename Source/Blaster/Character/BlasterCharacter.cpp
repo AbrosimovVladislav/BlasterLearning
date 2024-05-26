@@ -109,6 +109,26 @@ void ABlasterCharacter::TestTextWidgetSetup()
 	OverheadWidget->SetupAttachment(RootComponent);
 }
 
+void ABlasterCharacter::RotateCameraToCharacterBack()
+{
+	FRotator CharacterRotation = GetActorRotation();
+	CameraBoom->SetRelativeRotation(FRotator(-40.f, CharacterRotation.Yaw, 0.f));
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		int32 ScreenWidth, ScreenHeight;
+		PlayerController->GetViewportSize(ScreenWidth, ScreenHeight);
+
+		// Вычисляем координаты X и Y
+		float X = ScreenWidth / 2.0f;
+		float Y = ScreenHeight / 4.0f; // Половина между серединой и верхней точкой экрана
+
+		PlayerController->SetMouseLocation(X, Y);
+	}
+}
+
+//Getters Setters
 FVector ABlasterCharacter::GetForwardVector() const
 {
 	return ForwardVector;
