@@ -15,77 +15,7 @@ ABlasterCharacter::ABlasterCharacter()
 	TestTextWidgetSetup();
 }
 
-void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAxis("MoveForward", this, &ABlasterCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ABlasterCharacter::MoveRight);
-
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-}
-
-void ABlasterCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-	APlayerController* BlasterCharacterController = Cast<APlayerController>(GetController());
-	if (BlasterCharacterController)
-	{
-		BlasterCharacterController->bShowMouseCursor = true;
-	}
-}
-
-void ABlasterCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	RotateCharacterToMouseCursor();
-}
-
-void ABlasterCharacter::MoveForward(float Value)
-{
-	if (Controller != nullptr && Value != 0.f)
-	{
-		const FRotator Rotation = FollowCamera->GetComponentRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
-	}
-}
-
-void ABlasterCharacter::MoveRight(float Value)
-{
-	if (Controller != nullptr && Value != 0.f)
-	{
-		const FRotator Rotation = FollowCamera->GetComponentRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		AddMovementInput(Direction, Value);
-	}
-}
-
-void ABlasterCharacter::RotateCharacterToMouseCursor()
-{
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (PlayerController)
-	{
-		FVector2D MousePosition;
-		if (PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y))
-		{
-			FVector WorldDirection;
-			FVector WorldLocation;
-			PlayerController->DeprojectScreenPositionToWorld(
-				MousePosition.X, MousePosition.Y, WorldLocation, WorldDirection);
-			FVector TargetLocation = WorldLocation + WorldDirection * 1000;
-			FRotator NewRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
-			SetActorRotation(FRotator(0.0f, NewRotation.Yaw, 0.0f));
-
-			ForwardVector = GetActorForwardVector();
-			RightVector = GetActorRightVector();
-		}
-	}
-}
-
+// ---Setups---
 void ABlasterCharacter::CameraSetup()
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -109,6 +39,85 @@ void ABlasterCharacter::TestTextWidgetSetup()
 	OverheadWidget->SetupAttachment(RootComponent);
 }
 
+void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis("MoveForward", this, &ABlasterCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ABlasterCharacter::MoveRight);
+
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+}
+
+// ---Begin And Tick---
+void ABlasterCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	APlayerController* BlasterCharacterController = Cast<APlayerController>(GetController());
+	if (BlasterCharacterController)
+	{
+		BlasterCharacterController->bShowMouseCursor = true;
+	}
+}
+
+void ABlasterCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	RotateCharacterToMouseCursor();
+}
+
+// ---Movement---
+void ABlasterCharacter::MoveForward(float Value)
+{
+	if (Controller != nullptr && Value != 0.f)
+	{
+		const FRotator Rotation = FollowCamera->GetComponentRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		AddMovementInput(Direction, Value);
+	}
+}
+
+void ABlasterCharacter::MoveRight(float Value)
+{
+	if (Controller != nullptr && Value != 0.f)
+	{
+		const FRotator Rotation = FollowCamera->GetComponentRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		AddMovementInput(Direction, Value);
+	}
+}
+
+// ---Rotation---
+void ABlasterCharacter::RotateCharacterToMouseCursor()
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		FVector2D MousePosition;
+		if (PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y))
+		{
+			FRotator NewRotation = DefineRotationByMousePosition(MousePosition, PlayerController);
+			SetActorRotation(FRotator(0.0f, NewRotation.Yaw, 0.0f));
+
+			ForwardVector = GetActorForwardVector();
+			RightVector = GetActorRightVector();
+		}
+	}
+}
+
+FRotator ABlasterCharacter::DefineRotationByMousePosition(FVector2D MousePosition, APlayerController* PlayerController)
+{
+	FVector WorldDirection;
+	FVector WorldLocation;
+	PlayerController->DeprojectScreenPositionToWorld(
+		MousePosition.X, MousePosition.Y, WorldLocation, WorldDirection);
+	FVector TargetLocation = WorldLocation + WorldDirection * 1000;
+	return UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
+}
+
 void ABlasterCharacter::RotateCameraToCharacterBack()
 {
 	FRotator CharacterRotation = GetActorRotation();
@@ -128,7 +137,7 @@ void ABlasterCharacter::RotateCameraToCharacterBack()
 	}
 }
 
-//Getters Setters
+// ---Getters And Setters---
 FVector ABlasterCharacter::GetForwardVector() const
 {
 	return ForwardVector;

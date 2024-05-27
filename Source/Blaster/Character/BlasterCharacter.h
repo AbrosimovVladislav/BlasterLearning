@@ -43,4 +43,7 @@ private:
 
 	void CameraSetup();
 	void TestTextWidgetSetup();
+
+	UFUNCTION()
+	FRotator DefineRotationByMousePosition(FVector2D MousePosition, APlayerController* PlayerController);
 };
