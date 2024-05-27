@@ -23,18 +23,19 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (BlasterCharacter == nullptr) return;
 
 	FVector Velocity = BlasterCharacter->GetVelocity();
-	FVector ForwardVector = BlasterCharacter->GetForwardVector();
-	FVector RightVector = BlasterCharacter->GetRightVector();
+	FRotator Rotation = BlasterCharacter->GetCharacterRotation();
+	FVector ForwardVector = Rotation.Vector();
+	FVector RightVector = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
 
-	
-	GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Purple,
-		FString::Printf(TEXT("Fwd: %s, Rght: %s"), *ForwardVector.ToString(), *RightVector.ToString()));
-	
 	ForwardSpeed = FVector::DotProduct(ForwardVector, Velocity);
 	RightSpeed = FVector::DotProduct(RightVector, Velocity);
 
 	bIsInAir = BlasterCharacter->GetCharacterMovement()->IsFalling();
 
 	bIsAccelerating = BlasterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;
-}
 
+	// Debug message to ensure values are being updated correctly
+	GEngine->AddOnScreenDebugMessage(-1, 0.05f, FColor::Purple,
+	                                 FString::Printf(
+		                                 TEXT("ForwardSpeed: %f, RightSpeed: %f"), ForwardSpeed, RightSpeed));
+}

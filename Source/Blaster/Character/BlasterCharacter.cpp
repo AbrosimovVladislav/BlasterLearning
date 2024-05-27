@@ -4,12 +4,16 @@
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Engine/Engine.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 ABlasterCharacter::ABlasterCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	SetReplicates(true);
 
 	CameraSetup();
 	TestTextWidgetSetup();
@@ -47,6 +51,13 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis("MoveRight", this, &ABlasterCharacter::MoveRight);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+}
+
+void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABlasterCharacter, CharacterRotation);
 }
 
 // ---Begin And Tick---
@@ -93,35 +104,42 @@ void ABlasterCharacter::MoveRight(float Value)
 // ---Rotation---
 void ABlasterCharacter::RotateCharacterToMouseCursor()
 {
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (PlayerController)
+	if (IsLocallyControlled())
 	{
-		FVector2D MousePosition;
-		if (PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y))
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		if (PlayerController)
 		{
-			FRotator NewRotation = DefineRotationByMousePosition(MousePosition, PlayerController);
-			SetActorRotation(FRotator(0.0f, NewRotation.Yaw, 0.0f));
-
-			ForwardVector = GetActorForwardVector();
-			RightVector = GetActorRightVector();
+			FVector2D MousePosition;
+			if (PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y))
+			{
+				FRotator NewRotation = DefineRotationByMousePosition(MousePosition, PlayerController);
+				SetActorRotation(NewRotation);
+				Server_UpdateCharacterRotation(NewRotation, GetActorForwardVector(), GetActorRightVector());
+			}
 		}
+	}
+	else
+	{
+		SetActorRotation(CharacterRotation);
 	}
 }
 
-FRotator ABlasterCharacter::DefineRotationByMousePosition(FVector2D MousePosition, APlayerController* PlayerController)
+FRotator ABlasterCharacter::DefineRotationByMousePosition(FVector2D MousePosition,
+                                                          APlayerController* PlayerController) const
 {
 	FVector WorldDirection;
 	FVector WorldLocation;
 	PlayerController->DeprojectScreenPositionToWorld(
 		MousePosition.X, MousePosition.Y, WorldLocation, WorldDirection);
 	FVector TargetLocation = WorldLocation + WorldDirection * 1000;
-	return UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
+	FRotator FullNewRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
+	return FRotator(0.0f, FullNewRotation.Yaw, 0.0f);
 }
 
 void ABlasterCharacter::RotateCameraToCharacterBack()
 {
-	FRotator CharacterRotation = GetActorRotation();
-	CameraBoom->SetRelativeRotation(FRotator(-40.f, CharacterRotation.Yaw, 0.f));
+	FRotator Rotation = GetActorRotation();
+	CameraBoom->SetRelativeRotation(FRotator(-40.f, Rotation.Yaw, 0.f));
 
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController)
@@ -137,13 +155,28 @@ void ABlasterCharacter::RotateCameraToCharacterBack()
 	}
 }
 
-// ---Getters And Setters---
-FVector ABlasterCharacter::GetForwardVector() const
+void ABlasterCharacter::Server_UpdateCharacterRotation_Implementation(const FRotator& NewRotation,
+                                                                      FVector NewForwardVector, FVector NewRightVector)
 {
-	return ForwardVector;
+	CharacterRotation = NewRotation;
 }
 
-FVector ABlasterCharacter::GetRightVector() const
+bool ABlasterCharacter::Server_UpdateCharacterRotation_Validate(const FRotator& NewRotation, FVector NewForwardVector,
+                                                                FVector NewRightVector)
 {
-	return RightVector;
+	return true;
+}
+
+///// Вызывается на клиенте, когда изменился CharacterRotation
+void ABlasterCharacter::OnRep_CharacterRotation()
+{
+	SetActorRotation(CharacterRotation);
+	// GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Purple,
+	                                 // FString::Printf(TEXT("Client: Replicated Rotation: %s"), *CharacterRotation.ToString()));
+}
+
+// ---Getters And Setters---
+FRotator ABlasterCharacter::GetCharacterRotation() const
+{
+	return CharacterRotation;
 }

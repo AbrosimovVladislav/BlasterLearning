@@ -18,15 +18,15 @@ public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	UPROPERTY(BlueprintReadWrite, Category=Movement)
+	float ForwardSpeed;
+
+	UPROPERTY(BlueprintReadWrite, Category=Movement)
+	float RightSpeed;
+
 private:
 	UPROPERTY(BlueprintReadOnly, Category=Character, meta=(AllowPrivateAccess="true"))
 	class ABlasterCharacter* BlasterCharacter;
-
-	UPROPERTY(BlueprintReadOnly, Category=Movement, meta=(AllowPrivateAccess="true"))
-	float ForwardSpeed;
-
-	UPROPERTY(BlueprintReadOnly, Category=Movement, meta=(AllowPrivateAccess="true"))
-	float RightSpeed;
 
 	UPROPERTY(BlueprintReadOnly, Category=Movement, meta=(AllowPrivateAccess="true"))
 	bool bIsInAir;

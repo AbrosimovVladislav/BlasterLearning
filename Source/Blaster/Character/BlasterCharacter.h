@@ -13,13 +13,19 @@ public:
 	ABlasterCharacter();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable)
 	void RotateCameraToCharacterBack();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_UpdateCharacterRotation(const FRotator& NewRotation, FVector NewForwardVector, FVector NewRightVector);
+
+	UPROPERTY(ReplicatedUsing = OnRep_CharacterRotation, VisibleAnywhere, BlueprintReadOnly, Category = "Rotation")
+	FRotator CharacterRotation;
+
 	//Getters Setters
-	FVector GetForwardVector() const;
-	FVector GetRightVector() const;
+	FRotator GetCharacterRotation() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -38,12 +44,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	class UWidgetComponent* OverheadWidget;
 
-	FVector ForwardVector;
-	FVector RightVector;
-
 	void CameraSetup();
 	void TestTextWidgetSetup();
 
 	UFUNCTION()
-	FRotator DefineRotationByMousePosition(FVector2D MousePosition, APlayerController* PlayerController);
+	void OnRep_CharacterRotation();
+
+	UFUNCTION()
+	FRotator DefineRotationByMousePosition(FVector2D MousePosition, APlayerController* PlayerController) const;
 };
