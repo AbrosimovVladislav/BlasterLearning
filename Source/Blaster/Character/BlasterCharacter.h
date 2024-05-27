@@ -13,13 +13,9 @@ public:
 	ABlasterCharacter();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable)
 	void RotateCameraToCharacterBack();
-
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerRotateCharacterToMouseCursor(const FRotator& NewRotation);
 
 protected:
 	virtual void BeginPlay() override;

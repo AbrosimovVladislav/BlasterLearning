@@ -53,11 +53,6 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 }
 
-void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-}
-
 // ---Begin And Tick---
 void ABlasterCharacter::BeginPlay()
 {
@@ -114,7 +109,6 @@ void ABlasterCharacter::RotateCharacterToMouseCursor()
 	}
 }
 
-
 FRotator ABlasterCharacter::DefineRotationByMousePosition(FVector2D MousePosition,
                                                           APlayerController* PlayerController) const
 {
@@ -144,14 +138,4 @@ void ABlasterCharacter::RotateCameraToCharacterBack()
 
 		PlayerController->SetMouseLocation(X, Y);
 	}
-}
-
-void ABlasterCharacter::ServerRotateCharacterToMouseCursor_Implementation(const FRotator& NewRotation)
-{
-	SetActorRotation(NewRotation);
-}
-
-bool ABlasterCharacter::ServerRotateCharacterToMouseCursor_Validate(const FRotator& NewRotation)
-{
-	return true;
 }
