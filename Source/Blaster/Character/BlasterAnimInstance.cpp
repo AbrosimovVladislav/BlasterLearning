@@ -23,7 +23,7 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (BlasterCharacter == nullptr) return;
 
 	FVector Velocity = BlasterCharacter->GetVelocity();
-	FRotator Rotation = BlasterCharacter->GetCharacterRotation();
+	FRotator Rotation = BlasterCharacter->GetActorRotation();
 	FVector ForwardVector = Rotation.Vector();
 	FVector RightVector = FRotationMatrix(Rotation).GetScaledAxis(EAxis::Y);
 

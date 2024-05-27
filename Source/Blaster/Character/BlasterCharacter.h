@@ -19,13 +19,7 @@ public:
 	void RotateCameraToCharacterBack();
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_UpdateCharacterRotation(const FRotator& NewRotation, FVector NewForwardVector, FVector NewRightVector);
-
-	UPROPERTY(ReplicatedUsing = OnRep_CharacterRotation, VisibleAnywhere, BlueprintReadOnly, Category = "Rotation")
-	FRotator CharacterRotation;
-
-	//Getters Setters
-	FRotator GetCharacterRotation() const;
+	void ServerRotateCharacterToMouseCursor(const FRotator& NewRotation);
 
 protected:
 	virtual void BeginPlay() override;
@@ -46,9 +40,6 @@ private:
 
 	void CameraSetup();
 	void TestTextWidgetSetup();
-
-	UFUNCTION()
-	void OnRep_CharacterRotation();
 
 	UFUNCTION()
 	FRotator DefineRotationByMousePosition(FVector2D MousePosition, APlayerController* PlayerController) const;
