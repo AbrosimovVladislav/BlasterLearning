@@ -55,4 +55,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category="Weapon")
 	class UWidgetComponent* PickupWidget;
+
+	void WeaponSetup();
+	void AreaSphereSetup();
+	void PickupWidgetSetup();
 };

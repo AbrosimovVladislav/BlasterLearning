@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Blaster/Weapon/Weapon.h"
 #include "GameFramework/Character.h"
 #include "BlasterCharacter.generated.h"
 
@@ -13,9 +14,12 @@ public:
 	ABlasterCharacter();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	UFUNCTION(BlueprintCallable)
 	void RotateCameraToCharacterBack();
+
+	void SetOverlappingWeapon(AWeapon* Weapon);
 
 protected:
 	virtual void BeginPlay() override;
@@ -33,6 +37,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	class UWidgetComponent* OverheadWidget;
+
+	UPROPERTY(ReplicatedUsing=OnRep_OverlappingWeapon)
+	class AWeapon* OverlappingWeapon;
+
+	UFUNCTION()
+	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 
 	void CameraSetup();
 	void TestTextWidgetSetup();

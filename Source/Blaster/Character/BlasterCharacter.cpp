@@ -19,6 +19,14 @@ ABlasterCharacter::ABlasterCharacter()
 	TestTextWidgetSetup();
 }
 
+void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// DOREPLIFETIME(ABlasterCharacter, OverlappingWeapon);
+	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverlappingWeapon, COND_OwnerOnly);
+}
+
 // ---Setups---
 void ABlasterCharacter::CameraSetup()
 {
@@ -137,5 +145,52 @@ void ABlasterCharacter::RotateCameraToCharacterBack()
 		float Y = ScreenHeight / 4.0f; // Половина между серединой и верхней точкой экрана
 
 		PlayerController->SetMouseLocation(X, Y);
+	}
+}
+
+
+// ---PickUp Widget---
+void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
+{
+	GEngine->AddOnScreenDebugMessage(
+		-1,
+		5.f,
+		FColor::Purple,
+		FString::Printf(TEXT("Role: %s, OverlappingWeapon: %s"), TEXT("OnRep_OverlappingWeapon:"),
+		                OverlappingWeapon ? *OverlappingWeapon->GetName() : TEXT("None"))
+	);
+
+	// Will be called just on client
+	//If OverlappingWeapon==null, then we gonna skip this if
+	if (OverlappingWeapon)
+	{
+		OverlappingWeapon->ShowPickUpWidget(true);
+	}
+	//And we gonna manipulate with LastWeapon before OverlappingWeapon became null
+	if (LastWeapon)
+	{
+		LastWeapon->ShowPickUpWidget(false);
+	}
+}
+
+void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
+{
+	// Will be called just on server, because this will called from AWeapon::OnSphereOverlap which is only called from server
+
+	//If there was a weapon before, switch the widget
+	if (OverlappingWeapon)
+	{
+		OverlappingWeapon->ShowPickUpWidget(false);
+	}
+
+	//Set new weapon even if it is null
+	OverlappingWeapon = Weapon;
+	if (IsLocallyControlled())
+	{
+		//If new weapon not null, show widget on it
+		if (OverlappingWeapon)
+		{
+			OverlappingWeapon->ShowPickUpWidget(true);
+		}
 	}
 }

@@ -35,7 +35,7 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsAccelerating = BlasterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;
 
 	// Debug message to ensure values are being updated correctly
-	GEngine->AddOnScreenDebugMessage(-1, 0.05f, FColor::Purple,
-	                                 FString::Printf(
-		                                 TEXT("ForwardSpeed: %f, RightSpeed: %f"), ForwardSpeed, RightSpeed));
+	// GEngine->AddOnScreenDebugMessage(-1, 0.05f, FColor::Purple,
+	                                 // FString::Printf(
+		                                 // TEXT("ForwardSpeed: %f, RightSpeed: %f"), ForwardSpeed, RightSpeed));
 }
