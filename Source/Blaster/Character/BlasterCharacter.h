@@ -13,9 +13,10 @@ class BLASTER_API ABlasterCharacter : public ACharacter
 
 public:
 	ABlasterCharacter();
-	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void PostInitializeComponents() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void Tick(float DeltaTime) override;
 	
 	UFUNCTION(BlueprintCallable)
 	void RotateCameraToCharacterBack();
@@ -28,6 +29,7 @@ protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void RotateCharacterToMouseCursor();
+	void EquipButtonPressed();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta=(AllowPrivateAccess="true"))
@@ -42,14 +44,18 @@ private:
 	UPROPERTY(ReplicatedUsing=OnRep_OverlappingWeapon)
 	class AWeapon* OverlappingWeapon;
 
-	class Logger* Logger;
+	UPROPERTY(VisibleAnywhere)
+	class UCombatComponent* CombatComponent;
 
-	UFUNCTION()
-	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
+	class Logger* Logger;
 
 	void CameraSetup();
 	void TestTextWidgetSetup();
+	void CombatComponentSetup();
 
 	UFUNCTION()
 	FRotator DefineRotationByMousePosition(FVector2D MousePosition, APlayerController* PlayerController) const;
+
+	UFUNCTION()
+	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 };

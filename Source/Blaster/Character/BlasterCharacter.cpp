@@ -1,5 +1,6 @@
 #include "BlasterCharacter.h"
 
+#include "Blaster/Components/CombatComponent.h"
 #include "Blaster/Utils/Logger.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
@@ -18,6 +19,17 @@ ABlasterCharacter::ABlasterCharacter()
 
 	CameraSetup();
 	TestTextWidgetSetup();
+	CombatComponentSetup();
+}
+
+// ---Setups---
+void ABlasterCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	if (CombatComponent)
+	{
+		CombatComponent->Character = this;
+	}
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -27,7 +39,17 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverlappingWeapon, COND_OwnerOnly);
 }
 
-// ---Setups---
+void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis("MoveForward", this, &ABlasterCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ABlasterCharacter::MoveRight);
+
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &ABlasterCharacter::EquipButtonPressed);
+}
+
 void ABlasterCharacter::CameraSetup()
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -51,14 +73,10 @@ void ABlasterCharacter::TestTextWidgetSetup()
 	OverheadWidget->SetupAttachment(RootComponent);
 }
 
-void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ABlasterCharacter::CombatComponentSetup()
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAxis("MoveForward", this, &ABlasterCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ABlasterCharacter::MoveRight);
-
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+	CombatComponent->SetIsReplicated(true);
 }
 
 // ---Begin And Tick---
@@ -148,11 +166,19 @@ void ABlasterCharacter::RotateCameraToCharacterBack()
 	}
 }
 
+// ---Overlapping and equipping weapon---
+void ABlasterCharacter::EquipButtonPressed()
+{
+	if (CombatComponent && OverlappingWeapon && HasAuthority())
+	{
+		CombatComponent->EquipWeapon(OverlappingWeapon);
+	}
+}
 
-// ---PickUp Widget---
 void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
-	Logger->PrintOnScreen(FString("Client Weapon:"), OverlappingWeapon ? *OverlappingWeapon->GetName() : TEXT("None"));
+	Logger->PrintOnScreen(FString("OnRep_OverlappingWeapon called: "),
+	                      LastWeapon ? *LastWeapon->GetName() : TEXT("nullptr"));
 	// Will be called just on client
 	//If OverlappingWeapon==null, then we gonna skip this if
 	if (OverlappingWeapon)
@@ -168,7 +194,7 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 {
-	Logger->PrintOnScreen(FString("Server Weapon:"), Weapon ? *Weapon->GetName() : TEXT("None"));
+	Logger->PrintOnScreen(FString("SetOverlappingWeapon called: "), Weapon ? *Weapon->GetName() : TEXT("nullptr"));
 	// Will be called just on server, because this will called from AWeapon::OnSphereOverlap which is only called from server
 
 	//If there was a weapon before, switch the widget

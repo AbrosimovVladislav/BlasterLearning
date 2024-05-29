@@ -21,6 +21,7 @@ class BLASTER_API AWeapon : public AActor
 public:
 	AWeapon();
 	void ShowPickUpWidget(bool bShowWidget);
+	FORCEINLINE void SetWeaponState(EWeaponState State) { WeaponState = State; }
 
 protected:
 	virtual void BeginPlay() override;
