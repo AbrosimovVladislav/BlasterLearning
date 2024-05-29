@@ -3,6 +3,7 @@
 
 #include "LobbyGameMode.h"
 
+#include "Blaster/Utils/Logger.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "GameFramework/GameStateBase.h"
@@ -18,7 +19,7 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 		if (World)
 		{
 			bUseSeamlessTravel = true;
-			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Purple, FString(TEXT("Before Travel")));
+			Logger->PrintOnScreenBlack("Before Travel","");
 			World->ServerTravel(FString("/Game/Maps/BlasterMap?listen"));
 		}
 	}

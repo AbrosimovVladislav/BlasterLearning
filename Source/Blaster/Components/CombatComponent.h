@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Blaster/Utils/Logger.h"
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
@@ -13,6 +14,8 @@ class BLASTER_API UCombatComponent : public UActorComponent
 public:
 	UCombatComponent();
 	friend class ABlasterCharacter;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 	void EquipWeapon(class AWeapon* WeaponToEquip);
@@ -23,8 +26,11 @@ protected:
 private:
 	// Will be settled inside ABlasterCharacter::PostInitializeComponents()
 	ABlasterCharacter* Character;
-	
+
+	UPROPERTY(Replicated)
 	AWeapon* EquippedWeapon;
+
+	class Logger* Logger;
 
 	
 };

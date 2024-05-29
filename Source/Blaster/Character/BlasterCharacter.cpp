@@ -192,8 +192,6 @@ void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
 
 void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
-	Logger->PrintOnScreen(FString("OnRep_OverlappingWeapon called: "),
-	                      LastWeapon ? *LastWeapon->GetName() : TEXT("nullptr"));
 	// Will be called just on client
 	//If OverlappingWeapon==null, then we gonna skip this if
 	if (OverlappingWeapon)
@@ -205,13 +203,16 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	{
 		LastWeapon->ShowPickUpWidget(false);
 	}
+
+	Logger->PrintOnScreenCyan(FString("OnRep_OverlappingWeapon called: "),
+	                          LastWeapon ? *LastWeapon->GetName() : FString("nullptr"));
+	Logger->PrintOnScreenCyan(FString("OnRep_OverlappingWeapon, current OverlappingWeapon:"),
+	                          OverlappingWeapon ? *OverlappingWeapon->GetName() : FString("nullptr"));
 }
 
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 {
 	// Will be called just on server, because this will called from AWeapon::OnSphereOverlap which is only called from server
-	Logger->PrintOnScreen(FString("SetOverlappingWeapon called: "),
-						  Weapon ? *Weapon->GetName() : TEXT("nullptr"));
 	//If there was a weapon before, switch the widget
 	if (OverlappingWeapon)
 	{
@@ -228,4 +229,14 @@ void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 			OverlappingWeapon->ShowPickUpWidget(true);
 		}
 	}
+
+	Logger->PrintOnScreenBlue(FString("SetOverlappingWeapon called: "),
+	                          Weapon ? *Weapon->GetName() : FString("nullptr"));
+	Logger->PrintOnScreenBlue(FString("SetOverlappingWeapon, current OverlappingWeapon:"),
+	                          OverlappingWeapon ? *OverlappingWeapon->GetName() : FString("nullptr"));
+}
+
+bool ABlasterCharacter::IsWeaponEquipped()
+{
+	return CombatComponent && CombatComponent->EquippedWeapon;
 }

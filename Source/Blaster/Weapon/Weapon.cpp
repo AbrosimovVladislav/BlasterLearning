@@ -86,7 +86,6 @@ void AWeapon::OnRep_WeaponState()
 	case EWeaponState::EWS_Equipped:
 		ShowPickUpWidget(false);
 		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		Logger->PrintOnScreen("Collision:", UEnum::GetValueAsString(AreaSphere->GetCollisionEnabled()));
 		break;
 	}
 }

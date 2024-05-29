@@ -13,5 +13,9 @@ public:
 	Logger();
 	~Logger();
 
-	void PrintOnScreen(FString Prefix, FString Value);	
+	void PrintOnScreenCyan(FString Prefix, FString Value);	
+	void PrintOnScreenBlue(FString Prefix, FString Value);	
+	void PrintOnScreenRed(FString Prefix, FString Value);	
+	void PrintOnScreenGreen(FString Prefix, FString Value);	
+	void PrintOnScreenBlack(FString Prefix, FString Value);	
 };
