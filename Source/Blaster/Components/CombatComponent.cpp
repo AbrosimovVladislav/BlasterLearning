@@ -18,6 +18,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
+	DOREPLIFETIME(UCombatComponent, bAiming);
 }
 
 // ---Begin And Tick---
@@ -25,7 +26,6 @@ void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 }
-
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                      FActorComponentTickFunction* ThisTickFunction)
@@ -48,4 +48,18 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 		CharacterRightHandSocket->AttachActor(EquippedWeapon, CharacterSkeletalMesh);
 	}
 	EquippedWeapon->SetOwner(Character);
+}
+
+// ---Aiming And Shooting---
+void UCombatComponent::SetAiming(bool bIsAiming)
+{
+	//client prediction changing of bAiming
+	bAiming = bIsAiming;
+	//send request to change bAiming on server, bAiming is replicated, so it will send new value to clients
+	ServerSetAiming(bIsAiming);
+}
+
+void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
+{
+	bAiming = bIsAiming;
 }
