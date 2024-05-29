@@ -31,6 +31,7 @@ protected:
 	void MoveRight(float Value);
 	void RotateCharacterToMouseCursor();
 	void EquipButtonPressed();
+	void CrouchButtonPressed();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta=(AllowPrivateAccess="true"))

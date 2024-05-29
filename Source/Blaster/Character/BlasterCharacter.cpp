@@ -7,6 +7,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/Engine.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -16,6 +17,7 @@ ABlasterCharacter::ABlasterCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetReplicates(true);
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
 	CameraSetup();
 	TestTextWidgetSetup();
@@ -48,6 +50,7 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &ABlasterCharacter::EquipButtonPressed);
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ABlasterCharacter::CrouchButtonPressed);
 }
 
 void ABlasterCharacter::CameraSetup()
@@ -97,7 +100,7 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	RotateCharacterToMouseCursor();
 }
 
-// ---Movement---
+// ---Movement & Crouching---
 void ABlasterCharacter::MoveForward(float Value)
 {
 	if (Controller != nullptr && Value != 0.f)
@@ -118,6 +121,11 @@ void ABlasterCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void ABlasterCharacter::CrouchButtonPressed()
+{
+	bIsCrouched ? UnCrouch() : Crouch();
 }
 
 // ---Rotation---
