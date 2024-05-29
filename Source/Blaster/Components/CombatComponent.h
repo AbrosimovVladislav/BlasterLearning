@@ -23,6 +23,7 @@ protected:
 private:
 	// Will be settled inside ABlasterCharacter::PostInitializeComponents()
 	ABlasterCharacter* Character;
+	
 	AWeapon* EquippedWeapon;
 
 	

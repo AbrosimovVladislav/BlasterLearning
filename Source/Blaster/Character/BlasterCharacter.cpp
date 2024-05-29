@@ -169,7 +169,22 @@ void ABlasterCharacter::RotateCameraToCharacterBack()
 // ---Overlapping and equipping weapon---
 void ABlasterCharacter::EquipButtonPressed()
 {
-	if (CombatComponent && OverlappingWeapon && HasAuthority())
+	if (CombatComponent && OverlappingWeapon)
+	{
+		if (HasAuthority())
+		{
+			CombatComponent->EquipWeapon(OverlappingWeapon);
+		}
+		else
+		{
+			ServerEquipButtonPressed();
+		}
+	}
+}
+
+void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
+{
+	if (CombatComponent && OverlappingWeapon)
 	{
 		CombatComponent->EquipWeapon(OverlappingWeapon);
 	}
@@ -194,9 +209,9 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 {
-	Logger->PrintOnScreen(FString("SetOverlappingWeapon called: "), Weapon ? *Weapon->GetName() : TEXT("nullptr"));
 	// Will be called just on server, because this will called from AWeapon::OnSphereOverlap which is only called from server
-
+	Logger->PrintOnScreen(FString("SetOverlappingWeapon called: "),
+						  Weapon ? *Weapon->GetName() : TEXT("nullptr"));
 	//If there was a weapon before, switch the widget
 	if (OverlappingWeapon)
 	{

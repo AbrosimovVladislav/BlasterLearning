@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
 
+class USphereComponent;
 UENUM(BlueprintType)
 enum class EWeaponState : uint8
 {
@@ -20,8 +21,10 @@ class BLASTER_API AWeapon : public AActor
 
 public:
 	AWeapon();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void ShowPickUpWidget(bool bShowWidget);
-	FORCEINLINE void SetWeaponState(EWeaponState State) { WeaponState = State; }
+	void SetWeaponState(EWeaponState State);
+	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -51,11 +54,16 @@ private:
 	UPROPERTY(VisibleAnywhere, Category="Weapon")
 	class USphereComponent* AreaSphere;
 
-	UPROPERTY(VisibleAnywhere, Category="Weapon")
+	UPROPERTY(ReplicatedUsing=OnRep_WeaponState, VisibleAnywhere, Category="Weapon")
 	EWeaponState WeaponState;
 
 	UPROPERTY(VisibleAnywhere, Category="Weapon")
 	class UWidgetComponent* PickupWidget;
+
+	class Logger* Logger;
+
+	UFUNCTION()
+	void OnRep_WeaponState();
 
 	void WeaponSetup();
 	void AreaSphereSetup();

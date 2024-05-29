@@ -42,5 +42,4 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 		CharacterRightHandSocket->AttachActor(EquippedWeapon, CharacterSkeletalMesh);
 	}
 	EquippedWeapon->SetOwner(Character);
-	EquippedWeapon->ShowPickUpWidget(false);
 }
