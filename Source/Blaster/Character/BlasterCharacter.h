@@ -14,6 +14,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION(BlueprintCallable)
+	void ChangeEquipped();
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsEquipped() const;
+	
 	UFUNCTION(BlueprintCallable)
 	void RotateCameraToCharacterBack();
 
@@ -23,6 +31,12 @@ protected:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void RotateCharacterToMouseCursor();
+
+	UPROPERTY(Replicated)
+	bool IsEquipped;
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerSetIsEquipped(bool NewValue);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta=(AllowPrivateAccess="true"))

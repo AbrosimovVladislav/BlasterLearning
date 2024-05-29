@@ -53,6 +53,12 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 }
 
+void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ABlasterCharacter, IsEquipped);
+}
+
 // ---Begin And Tick---
 void ABlasterCharacter::BeginPlay()
 {
@@ -138,4 +144,33 @@ void ABlasterCharacter::RotateCameraToCharacterBack()
 
 		PlayerController->SetMouseLocation(X, Y);
 	}
+}
+
+// ---Equipping---
+void ABlasterCharacter::ChangeEquipped()
+{
+	IsEquipped = !IsEquipped;
+	// if (HasAuthority())
+	// {
+		// IsEquipped = !IsEquipped;
+	// }
+	// else
+	// {
+		// ServerSetIsEquipped(!IsEquipped);
+	// }
+}
+
+void ABlasterCharacter::ServerSetIsEquipped_Implementation(bool NewValue)
+{
+	IsEquipped = NewValue;
+}
+
+bool ABlasterCharacter::ServerSetIsEquipped_Validate(bool NewValue)
+{
+	return true;
+}
+
+bool ABlasterCharacter::GetIsEquipped() const
+{
+	return IsEquipped;
 }
