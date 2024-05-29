@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blaster/Weapon/Weapon.h"
+#include "Engine/Engine.h"
 #include "GameFramework/Character.h"
 #include "BlasterCharacter.generated.h"
 
@@ -40,6 +41,8 @@ private:
 
 	UPROPERTY(ReplicatedUsing=OnRep_OverlappingWeapon)
 	class AWeapon* OverlappingWeapon;
+
+	class Logger* Logger;
 
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);

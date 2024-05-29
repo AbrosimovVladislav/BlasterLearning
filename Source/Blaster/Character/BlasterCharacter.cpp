@@ -1,5 +1,6 @@
 #include "BlasterCharacter.h"
 
+#include "Blaster/Utils/Logger.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -23,7 +24,6 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	// DOREPLIFETIME(ABlasterCharacter, OverlappingWeapon);
 	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverlappingWeapon, COND_OwnerOnly);
 }
 
@@ -152,14 +152,7 @@ void ABlasterCharacter::RotateCameraToCharacterBack()
 // ---PickUp Widget---
 void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
-	GEngine->AddOnScreenDebugMessage(
-		-1,
-		5.f,
-		FColor::Purple,
-		FString::Printf(TEXT("Role: %s, OverlappingWeapon: %s"), TEXT("OnRep_OverlappingWeapon:"),
-		                OverlappingWeapon ? *OverlappingWeapon->GetName() : TEXT("None"))
-	);
-
+	Logger->PrintOnScreen(FString("Client Weapon:"), OverlappingWeapon ? *OverlappingWeapon->GetName() : TEXT("None"));
 	// Will be called just on client
 	//If OverlappingWeapon==null, then we gonna skip this if
 	if (OverlappingWeapon)
@@ -175,6 +168,7 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 
 void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 {
+	Logger->PrintOnScreen(FString("Server Weapon:"), Weapon ? *Weapon->GetName() : TEXT("None"));
 	// Will be called just on server, because this will called from AWeapon::OnSphereOverlap which is only called from server
 
 	//If there was a weapon before, switch the widget
