@@ -1,5 +1,7 @@
 #include "BlasterCharacter.h"
 
+#include <string>
+
 #include "Blaster/Components/CombatComponent.h"
 #include "Blaster/Utils/Logger.h"
 #include "Camera/CameraComponent.h"
@@ -128,6 +130,7 @@ void ABlasterCharacter::MoveRight(float Value)
 void ABlasterCharacter::CrouchButtonPressed()
 {
 	bIsCrouched ? UnCrouch() : Crouch();
+	Logger->PrintOnScreenBlack("Crouch Pressed: ", std::to_string(bIsCrouched).data());
 }
 
 // ---Rotation---
